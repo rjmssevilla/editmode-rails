@@ -17,8 +17,7 @@ module Editmode
       @variable_values = options[:variables].presence || {}
       @raw = options[:raw].present?
 
-      branch_params = branch_id.present? ? "branch_id=#{branch_id}" : ""
-      @url = "#{api_root_url}/chunks/#{identifier}?project_id=#{project_id}&#{branch_params}"
+      @url = "#{api_root_url}/chunks/#{identifier}"
       @cache_identifier = set_cache_identifier(identifier)
 
       if options[:response].present?
@@ -63,6 +62,14 @@ module Editmode
     end
 
     private
+
+    def query_params
+      {
+        'project_id' => project_id,
+        'branch_id' => branch_id
+      }
+    end
+
     # Todo: Transfer to helper utils
     def api_root_url
       ENV["EDITMODE_OVERRIDE_API_URL"] || "https://api.editmode.com"
@@ -107,7 +114,7 @@ module Editmode
 
     def get_content
       if !cached?
-        http_response = HTTParty.get(url)
+        http_response = HTTParty.get(url, query: query_params)
         response_received = true if http_response.code == 200
       end
 
@@ -128,6 +135,7 @@ module Editmode
       @chunk_type = response['chunk_type']
       @variable_fallbacks = response['variable_fallbacks'].presence || {}
       @collection_id = response["collection"]["identifier"] if chunk_type == 'collection_item'
+      @branch_id = response['branch_id']
     end
 
   end
