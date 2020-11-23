@@ -28,7 +28,7 @@ module Editmode
       end
     end
 
-    def field(field = nil)      
+    def field(field = nil)
       # Field ID can be a slug or field_name
       if chunk_type == 'collection_item'
         if field.present?
@@ -55,8 +55,8 @@ module Editmode
     end
 
     def content
-      raise "undefined method 'content` for chunk_type: collection_item \nDid you mean? field" if chunk_type == 'collection_item'
-      
+      raise "undefined method 'content' for chunk_type: collection_item \nDid you mean? field" if chunk_type == 'collection_item'
+
       result = variable_parse!(@content, variable_fallbacks, variable_values, @raw)
       result.try(:html_safe)
     end
@@ -64,10 +64,10 @@ module Editmode
     private
 
     def query_params
-      {
-        'project_id' => project_id,
-        'branch_id' => branch_id
-      }
+      the_params = { 'project_id' => project_id }
+      the_params['branch_id'] = branch_id if branch_id.present?
+
+      the_params
     end
 
     # Todo: Transfer to helper utils
@@ -90,7 +90,7 @@ module Editmode
       content = ActionController::Base.helpers.sanitize(content)
       tokens = content.scan(/\{{(.*?)\}}/)
       if tokens.any?
-        tokens.flatten! 
+        tokens.flatten!
         tokens.each do |token|
           token_value = values[token.to_sym] || variables[token] || ""
           sanitized_value = ActionController::Base.helpers.sanitize(token_value)
@@ -100,7 +100,7 @@ module Editmode
               sanitized_value
             end
           end
-          
+
           content.gsub!("{{#{token}}}", sanitized_value)
         end
       end
@@ -114,10 +114,7 @@ module Editmode
 
     def get_content
       if !cached?
-        puts url
-        puts query_params
         http_response = HTTParty.get(url, query: query_params)
-        puts http_response
         response_received = true if http_response.code == 200
       end
 
