@@ -114,7 +114,10 @@ module Editmode
 
     def get_content
       if !cached?
+        puts url
+        puts query_params
         http_response = HTTParty.get(url, query: query_params)
+        puts http_response
         response_received = true if http_response.code == 200
       end
 
