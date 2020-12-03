@@ -20,6 +20,14 @@ module Editmode
       config.project_id
     end
 
+    def auto_include=(auto_include)
+      config.auto_include = auto_include
+    end
+
+    def auto_include
+      config.auto_include
+    end
+
     def access_token
       config.access_token
     end
@@ -43,11 +51,14 @@ module Editmode
 
   class Configuration
     attr_accessor :access_token, :variable
-    attr_reader :project_id
+    attr_reader :project_id, :auto_include
 
     def project_id=(id)
       @project_id = id
+    end
 
+    def auto_include=(auto_include)
+      @auto_include = auto_include
     end
   end
 end
