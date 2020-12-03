@@ -39,6 +39,14 @@ module Editmode
       config.log_level = level
     end
 
+    def auto_include=(auto_include)
+      config.auto_include = auto_include
+    end
+
+    def auto_include
+      config.auto_include
+    end
+
     def access_token
       config.access_token
     end
@@ -73,7 +81,7 @@ module Editmode
 
   class Configuration
     attr_accessor :access_token, :variable
-    attr_reader :project_id, :log_level, :preload
+    attr_reader :project_id, :log_level, :preload, :auto_include
 
     def preload=(bool)
       @preload = bool
@@ -98,6 +106,10 @@ module Editmode
     def log_level=(level)
       @log_level = level
       logger.log_level = level
+    end
+
+    def auto_include=(auto_include)
+      @auto_include = auto_include
     end
   end
 end
