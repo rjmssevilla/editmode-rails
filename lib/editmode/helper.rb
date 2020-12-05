@@ -5,25 +5,32 @@ module Editmode
       field, options = parse_arguments(args)
       begin
         chunk = Editmode::ChunkValue.new(identifier, options.merge({raw: true}))
-
-        if chunk.chunk_type == 'collection_item'
-          chunk_type = chunk.field_chunk(field)["chunk_type"]
-          content = render_content(chunk_type, chunk.field(field), options[:class], field)
-        else
-          content = render_content(chunk.chunk_type, chunk.content, options[:class])
-        end
-
-        content
+        render_noneditable_chunk(chunk, field, options)
       rescue => er
         puts er
       end
     end
 
-    def render_content(chunk_type, content, css_class=nil, field=nil)
-      return image_tag(content, class: css_class) if chunk_type == 'image'
-      return content if field.present?
+    def render_noneditable_chunk(chunk, field=nil, options=nil)
+      return render_collection_item(chunk, field, options) if chunk.chunk_type == 'collection_item'
 
-      content
+      render_content(chunk, options)
+    end
+
+    def render_collection_item(chunk, field=nil, options=nil)
+      return render_image(chunk.field(field), options[:class]) if chunk.field_chunk(field)['chunk_type'] == 'image'
+
+      chunk.field(field)
+    end
+
+    def render_content(chunk, options=nil)
+      return render_image(chunk.content, options[:class]) if chunk.chunk_type == 'image'
+
+      chunk.content
+    end
+
+    def render_image(content, css_class=nil)
+      image_tag(content, class: css_class)
     end
 
     def render_custom_field_raw(label, options={})
