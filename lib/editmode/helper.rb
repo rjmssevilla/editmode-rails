@@ -19,19 +19,19 @@ module Editmode
     end
 
     def render_collection_item(chunk, field=nil, options=nil)
-      return render_image(chunk.field(field), options[:class]) if chunk.field_chunk(field)['chunk_type'] == 'image'
+      return render_image(chunk.field(field), options[:class], options[:alt]) if chunk.field_chunk(field)['chunk_type'] == 'image'
 
       chunk.field(field)
     end
 
     def render_content(chunk, options=nil)
-      return render_image(chunk.content, options[:class]) if chunk.chunk_type == 'image'
+      return render_image(chunk.content, options[:class], options[:alt]) if chunk.chunk_type == 'image'
 
       chunk.content
     end
 
-    def render_image(content, css_class=nil)
-      image_tag(content, class: css_class)
+    def render_image(content, css_class=nil, alt_text=nil)
+      image_tag(content, class: css_class, alt: alt_text)
     end
 
     def render_custom_field_raw(label, options={})
